@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>what's your ideal date? ✧</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Quicksand:wght@400;500;600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<style>
+  :root {
+    --pink:   #ff3f99;
+    --pink2:  #ff86c6;
+    --cyan:   #2fd9ff;
+    --purple: #9b5cff;
+    --lav:    #c9a3ff;
+    --lime:   #b6ff3c;
+    --ink:    #35215a;
+    --muted:  #8a6fb0;
+    --panel:  rgba(255, 255, 255, 0.82);
+    font-size: 17px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body { min-height: 100%; }
+
+  body {
+    font-family: 'Quicksand', system-ui, sans-serif;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.55;
+    background: linear-gradient(135deg, #ff9ed6, #c5a8ff, #8fd9ff, #ffc2e8);
+    background-size: 260% 260%;
+    animation: bgshift 20s ease infinite;
+    padding:
+      calc(env(safe-area-inset-top, 0px) + 14px)
+      18px
+      calc(env(safe-area-inset-bottom, 0px) + 46px);
+    position: relative;
+    overflow-x: hidden;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24'%3E%3Cpath fill='%23fff' stroke='%23ff3f99' stroke-width='1.2' d='M12 2l2 7 7 2-7 2-2 7-2-7-7-2 7-2z'/%3E%3C/svg%3E") 12 12, auto;
+  }
+  @keyframes bgshift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+  /* floating sparkles */
+  .stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .spark { position: absolute; animation: twinkle ease-in-out infinite; filter: drop-shadow(0 0 4px rgba(255,255,255,0.7)); }
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.25; transform: scale(0.7) rotate(0deg); }
+    50%      { opacity: 1;    transform: scale(1.15) rotate(20deg); }
+  }
+
+  .stage { position: relative; z-index: 1; max-width: 560px; margin: 0 auto; }
+
+  /* glossy candy panel */
+  .panel {
+    background: var(--panel);
+    backdrop-filter: blur(7px);
+    border: 3px solid #fff;
+    border-radius: 30px;
+    padding: 30px 26px;
+    position: relative;
+    box-shadow:
+      0 0 0 3px rgba(255, 79, 153, 0.30),
+      0 18px 42px rgba(120, 60, 170, 0.35),
+      inset 0 3px 0 rgba(255, 255, 255, 0.95),
+      inset 0 26px 36px rgba(255, 255, 255, 0.45);
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 0.82rem;
+    color: #fff;
+    background: linear-gradient(180deg, var(--cyan), #15b6e0);
+    border: 2px solid #fff; border-radius: 100px;
+    padding: 5px 16px;
+    box-shadow: 0 4px 0 rgba(21, 182, 224, 0.5), 0 6px 12px rgba(21,182,224,0.3);
+  }
+
+  h1.title {
+    font-family: 'Baloo 2', cursive; font-weight: 800;
+    font-size: clamp(2.3rem, 9vw, 3.4rem);
+    line-height: 1.02;
+    background: linear-gradient(100deg, #ff3f99, #9b5cff, #2fd9ff, #ff3f99);
+    background-size: 300% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    filter: drop-shadow(2px 3px 0 #fff) drop-shadow(4px 5px 0 rgba(155, 92, 255, 0.3));
+    animation: holo 7s linear infinite;
+  }
+  @keyframes holo { to { background-position: 300% 0; } }
+
+  /* gel buttons */
+  .btn {
+    font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.05rem;
+    color: #fff; cursor: pointer;
+    background: linear-gradient(180deg, #ff86c6, #ff3f99 58%, #e12e87);
+    border: 2.5px solid #fff; border-radius: 100px;
+    padding: 13px 40px;
+    box-shadow:
+      0 6px 0 #c42e78,
+      0 13px 22px rgba(196, 46, 120, 0.42),
+      inset 0 2px 2px rgba(255, 255, 255, 0.85),
+      inset 0 -4px 7px rgba(150, 20, 90, 0.3);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:active { transform: translateY(4px); box-shadow: 0 2px 0 #c42e78, inset 0 2px 2px rgba(255,255,255,0.85); }
+
+  .btn-cyan {
+    background: linear-gradient(180deg, #7fe9ff, #2fd9ff 58%, #12b0e0);
+    box-shadow: 0 6px 0 #0e93bd, 0 13px 22px rgba(18,176,224,0.4), inset 0 2px 2px rgba(255,255,255,0.85), inset 0 -4px 7px rgba(10,110,150,0.3);
+  }
+  .btn-cyan:active { box-shadow: 0 2px 0 #0e93bd, inset 0 2px 2px rgba(255,255,255,0.85); }
+
+  /* Intro */
+  .intro { text-align: center; }
+  .intro .badge { margin-bottom: 18px; }
+  .intro h1.title { margin-bottom: 18px; }
+  .intro .lede { color: var(--ink); font-size: 1.02rem; max-width: 40ch; margin: 0 auto 14px; }
+  .intro .note { color: var(--muted); font-size: 0.92rem; max-width: 38ch; margin: 0 auto 26px; }
+  .intro-wrap { padding-top: 7vh; }
+
+  /* Progress */
+  .topbar { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; padding: 0 6px; }
+  .counter {
+    font-family: 'Press Start 2P', monospace; font-size: 0.62rem;
+    color: #fff; white-space: nowrap; text-shadow: 1px 1px 0 var(--purple);
+  }
+  .track {
+    flex: 1; height: 14px; border-radius: 100px;
+    background: rgba(255, 255, 255, 0.55);
+    border: 2px solid #fff; overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(120, 60, 170, 0.25);
+  }
+  .fill {
+    height: 100%; width: 0%; border-radius: 100px;
+    background: linear-gradient(90deg, var(--cyan), var(--pink));
+    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  /* Question */
+  .q-screen { animation: pop 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+  @keyframes pop { from { opacity: 0; transform: translateY(12px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .q-text { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: clamp(1.35rem, 5vw, 1.7rem); line-height: 1.22; margin-bottom: 6px; color: var(--ink); }
+  .q-sub { color: var(--muted); font-size: 0.92rem; margin-bottom: 22px; }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    display: flex; align-items: center; gap: 14px;
+    background: #fff; color: var(--ink);
+    border: 2.5px solid var(--lav); border-radius: 18px;
+    padding: 14px 16px; text-align: left; cursor: pointer; width: 100%;
+    font-family: 'Quicksand', sans-serif; font-weight: 600; font-size: 0.98rem; line-height: 1.35;
+    box-shadow: 0 4px 0 rgba(155, 92, 255, 0.2);
+    transition: transform 0.14s ease, border-color 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
+  }
+  .option:hover { transform: translateY(-2px); border-color: var(--pink); box-shadow: 0 6px 0 rgba(255, 79, 153, 0.3); }
+  .option .label { flex: 1; }
+  .option .dot {
+    flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+    border: 2.5px solid var(--lav); margin-left: auto; position: relative; transition: border-color 0.14s ease;
+  }
+  .option.selected {
+    border-color: var(--pink);
+    background: linear-gradient(120deg, #ffe4f3, #ece2ff);
+    box-shadow: 0 4px 0 var(--pink);
+  }
+  .option.selected .dot { border-color: var(--pink); }
+  .option.selected .dot::after {
+    content: ''; position: absolute; inset: 3px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--pink), var(--purple));
+  }
+  .option:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
+
+  .q-foot { display: flex; justify-content: flex-end; margin-top: 20px; }
+  .btn-next { opacity: 0; pointer-events: none; transform: translateY(6px); }
+  .btn-next.visible { opacity: 1; pointer-events: all; transform: translateY(0); }
+
+  /* Result */
+  .result { text-align: center; }
+  .result .verdict-label { font-family: 'Press Start 2P', monospace; font-size: 0.6rem; color: var(--purple); margin-bottom: 16px; }
+  .result .date-name {
+    font-family: 'Baloo 2', cursive; font-weight: 800;
+    font-size: clamp(2.2rem, 9vw, 3.1rem); line-height: 1.05; margin-bottom: 14px;
+    background: linear-gradient(100deg, #ff3f99, #9b5cff, #2fd9ff, #ff3f99);
+    background-size: 300% 100%;
+    -webkit-background-clip: text; background-clip: text;
+    -webkit-text-fill-color: transparent; color: transparent;
+    filter: drop-shadow(2px 2px 0 #fff) drop-shadow(3px 4px 0 rgba(155, 92, 255, 0.3));
+    animation: holo 7s linear infinite, popbig 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes popbig { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+  .result .headline { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 1.15rem; color: var(--ink); margin-bottom: 18px; }
+  .result .desc { color: var(--ink); font-weight: 500; font-size: 1rem; line-height: 1.65; max-width: 46ch; margin: 0 auto 24px; text-align: left; }
+
+  .block { text-align: left; max-width: 46ch; margin: 0 auto 18px; background: rgba(255,255,255,0.6); border: 2px solid #fff; border-radius: 16px; padding: 14px 16px; }
+  .block .k { font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 0.9rem; color: var(--pink); margin-bottom: 5px; }
+  .block p { color: var(--ink); font-weight: 500; font-size: 0.95rem; line-height: 1.6; }
+
+  .status {
+    max-width: 46ch; margin: 2px auto 22px; font-size: 0.9rem; font-weight: 600;
+    padding: 13px 18px; border-radius: 16px; border: 2px solid #fff;
+    display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center;
+  }
+  .status.sending { color: var(--muted); background: rgba(255,255,255,0.6); }
+  .status.sent    { color: #0e8a63; background: #d9ffee; border-color: #86f0c4; }
+  .status.manual  { color: var(--pink); background: #fff0f7; flex-direction: column; gap: 10px; }
+  .status a {
+    font-family: 'Baloo 2', cursive; font-weight: 700; color: #fff; text-decoration: none;
+    background: linear-gradient(180deg, #ff86c6, #ff3f99); border: 2px solid #fff;
+    padding: 9px 22px; border-radius: 100px; box-shadow: 0 4px 0 #c42e78;
+  }
+
+  .closer { color: var(--muted); font-size: 0.96rem; max-width: 38ch; margin: 0 auto 22px; }
+  .btn-ghost {
+    font-family: 'Baloo 2', cursive; font-weight: 700; font-size: 0.92rem; cursor: pointer;
+    color: var(--purple); background: #fff; border: 2.5px solid var(--lav);
+    border-radius: 100px; padding: 10px 26px; box-shadow: 0 4px 0 rgba(155, 92, 255, 0.25);
+    transition: transform 0.12s ease;
+  }
+  .btn-ghost:hover { transform: translateY(-2px); }
+  .btn-ghost:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(155,92,255,0.25); }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 480px) { :root { font-size: 16px; } .intro-wrap { padding-top: 4vh; } .panel { padding: 26px 20px; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition-duration: 0.01ms !important; } }
+</style>
+</head>
+<body>
+
+<div class="stars" id="stars"></div>
+
+<div class="stage">
+
+  <!-- INTRO -->
+  <section id="intro" class="intro-wrap">
+    <div class="intro">
+      <div class="panel">
+        <h1 class="title">let's figure out your ideal date together</h1>
+        <button class="btn" onclick="start()">start ✧</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- QUIZ -->
+  <section id="quiz" class="hidden">
+    <div class="topbar">
+      <span class="counter" id="counter">1 / 8</span>
+      <div class="track"><div class="fill" id="fill"></div></div>
+    </div>
+    <div class="panel">
+      <div id="qScreen"></div>
+    </div>
+    <div class="q-foot">
+      <button class="btn btn-cyan btn-next" id="next" onclick="advance()">next</button>
+    </div>
+  </section>
+
+  <!-- RESULT -->
+  <section id="result-screen" class="hidden">
+    <div class="panel">
+      <div class="result" id="result"></div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+  "use strict";
+
+  const ARYAN_EMAIL = "aryantak29@gmail.com";
+  const ARYAN_NAME  = "Aryan";
+
+  /* ── EmailJS setup ──────────────────────────────────────────────
+     Make a free account at emailjs.com, add an email service and a
+     template, then paste the three IDs below. The template should use
+     these variables: date_name, headline, description, why_it_works,
+     the_read, aryan_note, all_answers, sent_at, to_email, to_name.
+     If these stay as placeholders, or the page is hosted somewhere
+     that blocks the request, it falls back to a one tap mail link so
+     the result still reaches you.                                     */
+  const EJS_PUBLIC_KEY  = "YOUR_PUBLIC_KEY";
+  const EJS_SERVICE_ID  = "YOUR_SERVICE_ID";
+  const EJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";
+
+  /* ── Questions ───────────────────────────────────────────────── */
+  const questions = [
+    {
+      text: "open your camera roll. what's the last photo, for real?",
+      sub: "the last photo never lies.",
+      options: [
+        { label: "a sunset i literally stopped walking for.", v: "beach" },
+        { label: "a plate of food i made everyone wait on.", v: "dessert" },
+        { label: "a screenshot of something i was trying to crack.", v: "mystery" },
+        { label: "a blurry pic from a night that got a little wild.", v: "horror" }
+      ]
+    },
+    {
+      text: "how you order your coffee. you're a:",
+      sub: "small order, big tell.",
+      options: [
+        { label: "same order every time, they know me there.", v: "dessert" },
+        { label: "something i can nurse slowly while we talk.", v: "beach" },
+        { label: "iced, to go, i'm not one for sitting still.", v: "pickleball" },
+        { label: "whatever looks most unhinged on the menu.", v: "horror" }
+      ]
+    },
+    {
+      text: "your bag tips over. what rolls out first?",
+      sub: "no judgment, we've all got a chaos bag.",
+      options: [
+        { label: "a half eaten snack and like three lip balms.", v: "dessert" },
+        { label: "a pen and a receipt covered in little notes.", v: "mystery" },
+        { label: "a water bottle and a slightly battered grip.", v: "pickleball" },
+        { label: "sunglasses and a book i'm three pages into.", v: "beach" }
+      ]
+    },
+    {
+      text: "it's 1am. what's actually open on your phone?",
+      sub: "be honest, no one's watching.",
+      options: [
+        { label: "a convo that got way too deep way too fast.", v: "mystery" },
+        { label: "a group chat fighting over who's hosting game night.", v: "pickleball" },
+        { label: "a food app, let's not pretend otherwise.", v: "dessert" },
+        { label: "a true crime video i swore i'd stop after one.", v: "horror" }
+      ]
+    },
+    {
+      text: "glance down at your shoes rn. they're:",
+      sub: "people never think about their shoes.",
+      options: [
+        { label: "clean, but somehow always a little sandy.", v: "beach" },
+        { label: "scuffed from actually getting used.", v: "pickleball" },
+        { label: "spotless. i notice everything, feet included.", v: "mystery" },
+        { label: "boots, ready if the night goes sideways.", v: "horror" }
+      ]
+    },
+    {
+      text: "you walk into a room you've never been in. first move?",
+      sub: "the first ten seconds give you away.",
+      options: [
+        { label: "clock the exits and the one odd thing in the room.", v: "mystery" },
+        { label: "head for whatever looks a little bit of a dare.", v: "horror" },
+        { label: "find the best seat and just take it all in.", v: "beach" },
+        { label: "find the warmest corner and settle right in.", v: "dessert" }
+      ]
+    },
+    {
+      text: "the thing you kept that you probably should've tossed:",
+      sub: "the one you can't throw out.",
+      options: [
+        { label: "ticket stubs and little notes from people.", v: "dessert" },
+        { label: "a shell or a pebble from somewhere nice.", v: "beach" },
+        { label: "a half finished puzzle i refuse to quit on.", v: "mystery" },
+        { label: "an old trophy from something kinda dumb i won.", v: "pickleball" }
+      ]
+    },
+    {
+      text: "last time you fully lost track of time. you were:",
+      sub: "the real last time, not the cute answer.",
+      options: [
+        { label: "watching the sky change, doing nothing.", v: "beach" },
+        { label: "deep in something that made my heart race.", v: "horror" },
+        { label: "mid game, way too invested in winning.", v: "pickleball" },
+        { label: "over dessert and a convo that just kept going.", v: "dessert" }
+      ]
+    }
+  ];
+
+  /* ── Results ─────────────────────────────────────────────────── */
+  const results = {
+    beach: {
+      name: "Wine at the Beach",
+      headline: "you like it slow and easy",
+      desc: "you're not into big flashy dates. you just want good company, a nice drink, and enough quiet to actually talk. sunset, some wine, the waves, nowhere to be. if there's a spark you'll feel it, and if not, at least the view ate.",
+      why: "the setting does all the work so neither of you has to try too hard. no loud music, no awkward bill, just you two and the ocean. you learn a lot about someone when there's nothing to distract you.",
+      read: "chill and easy to be around. the type who remembers that random thing you said last week.",
+      aryanNote: "Ishita got wine at the beach. She wants easy and relaxed. Find a good sunset spot, bring something nice to drink, don't over plan it, and just be there."
+    },
+    dessert: {
+      name: "Dessert Date",
+      headline: "you're all about the sweet stuff",
+      desc: "you love the little things and you're not shy about it. a good dessert, a cosy spot, and a convo that goes wherever. you'd rather share one amazing thing slowly than rush through a big fancy meal.",
+      why: "a dessert date is sweet and low pressure without being a whole production. short enough to leave you wanting more, cosy enough to drop your guard. you can tell a lot about someone by what they order and whether they share a bite.",
+      read: "warm and a lil indulgent. the type who can turn a boring tuesday into a vibe.",
+      aryanNote: "Ishita picked the dessert date. She likes warmth and the little details. Find a place with great dessert and a nice vibe, keep it cosy, and let the chat flow."
+    },
+    mystery: {
+      name: "Mystery Room",
+      headline: "you want something that keeps you thinking",
+      desc: "small talk bores you and you've never hidden it. you like to think, solve stuff, and figure things out with someone. a mystery room shows you a lot fast: who takes charge, who listens, how you both handle pressure, and if you can laugh when it goes sideways.",
+      why: "you'll learn more in one locked hour than in three months of texting. you see how someone actually thinks under pressure. escape and it's elite. don't and it's still a great story.",
+      read: "sharp and quick. probably solved it already and too nice to say.",
+      aryanNote: "Ishita wants the mystery room. She's sharp and likes a real challenge. Book one, don't pretend you know all the answers, and let her lead when she's onto something. This one suits you."
+    },
+    horror: {
+      name: "Horror Movie Night",
+      headline: "you like a bit of a thrill",
+      desc: "you're into a little intensity and mischief. a horror night is all tension, closeness, and the fun of being scared together. you don't want a safe boring evening. you want one that gets your heart going and makes the convo a bit bolder.",
+      why: "getting scared together is a shortcut to real chemistry. you find out fast if someone laughs at the right bits, keeps their cool, and is fun once the lights go off. easy to plan, surprisingly telling.",
+      read: "bold and playful. the type who stays dead calm through the jumpscare just to watch you jump.",
+      aryanNote: "Ishita picked the horror movie night. She likes a thrill and a bit of mischief. Pick something properly scary, set the mood, and keep it fun. The rest sorts itself out."
+    },
+    pickleball: {
+      name: "Pickleball",
+      headline: "you live for a bit of competition",
+      desc: "you'd rather do something than sit across a table being sized up. you like moving around, some friendly rivalry, and easy laughs when no one's taking it too seriously. a pickleball date means you're both too busy having fun to feel nervous, and the chemistry shows up in the trash talk.",
+      why: "it's active, fun, and totally disarming. you see how someone competes, how they lose, and if they can laugh at themselves, all in one afternoon. no awkward silences because you're busy trying to beat each other.",
+      read: "high energy and quick to laugh. not letting you win just to be nice.",
+      aryanNote: "Ishita wants the pickleball date. She likes energy and competition. Book a court, keep it light, and don't let her win too easily. She'll respect the effort."
+    }
+  };
+
+  /* ── State ───────────────────────────────────────────────────── */
+  let idx = 0;
+  let picked = null;
+  const scores = { beach: 0, dessert: 0, mystery: 0, horror: 0, pickleball: 0 };
+  const answers = [];
+
+  function start() {
+    document.getElementById("intro").classList.add("hidden");
+    document.getElementById("quiz").classList.remove("hidden");
+    render();
+  }
+
+  function render() {
+    picked = null;
+    const q = questions[idx];
+    document.getElementById("next").classList.remove("visible");
+    document.getElementById("next").textContent = (idx === questions.length - 1) ? "see my result ✧" : "next";
+    document.getElementById("counter").textContent = (idx + 1) + " / " + questions.length;
+    document.getElementById("fill").style.width = (idx / questions.length) * 100 + "%";
+
+    let opts = "";
+    q.options.forEach((o, i) => {
+      opts +=
+        '<button class="option" data-i="' + i + '" onclick="choose(' + i + ')">' +
+          '<span class="label">' + o.label + '</span>' +
+          '<span class="dot"></span>' +
+        '</button>';
+    });
+
+    document.getElementById("qScreen").innerHTML =
+      '<div class="q-screen">' +
+        '<div class="q-text">' + q.text + '</div>' +
+        '<div class="q-sub">' + q.sub + '</div>' +
+        '<div class="options">' + opts + '</div>' +
+      '</div>';
+  }
+
+  function choose(i) {
+    document.querySelectorAll(".option").forEach((b) => b.classList.remove("selected"));
+    document.querySelector('.option[data-i="' + i + '"]').classList.add("selected");
+    picked = questions[idx].options[i];
+    document.getElementById("next").classList.add("visible");
+  }
+
+  function advance() {
+    if (!picked) return;
+    scores[picked.v]++;
+    answers.push({ q: questions[idx].text, a: picked.label });
+    idx++;
+    if (idx >= questions.length) finish();
+    else render();
+  }
+
+  function finish() {
+    document.getElementById("fill").style.width = "100%";
+    document.getElementById("quiz").classList.add("hidden");
+    document.getElementById("result-screen").classList.remove("hidden");
+
+    const order = ["beach", "dessert", "mystery", "horror", "pickleball"];
+    let winner = order[0];
+    order.forEach((k) => { if (scores[k] > scores[winner]) winner = k; });
+    const r = results[winner];
+
+    document.getElementById("result").innerHTML =
+      '<p class="verdict-label">your ideal date is</p>' +
+      '<div class="date-name">' + r.name + '</div>' +
+      '<p class="headline">' + r.headline + '</p>' +
+      '<p class="desc">' + r.desc + '</p>' +
+      '<div class="block"><div class="k">why it fits you</div><p>' + r.why + '</p></div>' +
+      '<div class="block"><div class="k">the read on you</div><p>' + r.read + '</p></div>' +
+      '<div class="status sending" id="status">sending this to Aryan...</div>' +
+      '<p class="closer">that\'s you bestie 💅 so... are you gonna say yes? 👀</p>' +
+      '<button class="btn-ghost" onclick="again()">take it again</button>';
+
+    sendResult(r);
+  }
+
+  function again() {
+    idx = 0; picked = null; answers.length = 0;
+    Object.keys(scores).forEach((k) => scores[k] = 0);
+    document.getElementById("result-screen").classList.add("hidden");
+    document.getElementById("quiz").classList.remove("hidden");
+    render();
+  }
+
+  /* ── Delivery to Aryan ───────────────────────────────────────── */
+  function sendResult(r) {
+    const answersText = answers.map((x, i) => "Q" + (i + 1) + ": " + x.q + "\nA: " + x.a).join("\n\n");
+    const sentAt = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
+
+    const params = {
+      to_email: ARYAN_EMAIL, to_name: ARYAN_NAME,
+      date_name: r.name, headline: r.headline, description: r.desc,
+      why_it_works: r.why, the_read: r.read, aryan_note: r.aryanNote,
+      all_answers: answersText, sent_at: sentAt
+    };
+
+    const configured =
+      EJS_PUBLIC_KEY.indexOf("YOUR_") !== 0 &&
+      EJS_SERVICE_ID.indexOf("YOUR_") !== 0 &&
+      EJS_TEMPLATE_ID.indexOf("YOUR_") !== 0;
+
+    const fallback = () => {
+      const subject = encodeURIComponent("Ishita finished the quiz. Result: " + r.name);
+      const body = encodeURIComponent(
+        "She's done. Here's what came up.\n\n" +
+        "RESULT: " + r.name + "\n" + r.headline + "\n\n" +
+        r.desc + "\n\n" +
+        "Why it fits her: " + r.why + "\n\n" +
+        "The read on her: " + r.read + "\n\n" +
+        "Your move: " + r.aryanNote + "\n\n" +
+        "Her answers:\n" + answersText + "\n\n" +
+        "Finished at: " + sentAt
+      );
+      const el = document.getElementById("status");
+      el.className = "status manual";
+      el.innerHTML = "<div>almost there, one tap ✧</div>" +
+        '<a href="mailto:' + ARYAN_EMAIL + "?subject=" + subject + "&body=" + body + '">send it to Aryan</a>';
+    };
+
+    if (!configured || typeof emailjs === "undefined") { fallback(); return; }
+
+    try {
+      emailjs.init(EJS_PUBLIC_KEY);
+      emailjs.send(EJS_SERVICE_ID, EJS_TEMPLATE_ID, params)
+        .then(() => {
+          const el = document.getElementById("status");
+          el.className = "status sent";
+          el.textContent = "sent! Aryan's got it. he's def checking his phone rn 👀";
+        })
+        .catch(() => fallback());
+    } catch (e) { fallback(); }
+  }
+
+  /* ── sparkles ────────────────────────────────────────────────── */
+  (function () {
+    const chars = ["✦", "✧", "★", "♡", "⋆", "✸"];
+    const cols = ["#ffffff", "#ff86c6", "#2fd9ff", "#b6ff3c", "#c9a3ff"];
+    const box = document.getElementById("stars");
+    for (let i = 0; i < 16; i++) {
+      const s = document.createElement("span");
+      s.className = "spark";
+      s.textContent = chars[Math.floor(Math.random() * chars.length)];
+      s.style.left = Math.random() * 100 + "%";
+      s.style.top = Math.random() * 100 + "%";
+      s.style.color = cols[Math.floor(Math.random() * cols.length)];
+      s.style.fontSize = (12 + Math.random() * 20) + "px";
+      s.style.animationDuration = (2.5 + Math.random() * 3) + "s";
+      s.style.animationDelay = (Math.random() * 3) + "s";
+      box.appendChild(s);
+    }
+  })();
+</script>
+</body>
+</html>
